@@ -1,4 +1,5 @@
 #include "shadersUtil.h"
+#include "filesUtil.h"
 
 
 static unsigned CreateShader(const char *source, GLenum shader_type)
@@ -10,7 +11,7 @@ static unsigned CreateShader(const char *source, GLenum shader_type)
 	glCompileShader(shader);
 
 	int  success;
-	char infoLog[512];
+	char info_log[512];
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 	if(!success)
 	{
@@ -19,31 +20,44 @@ static unsigned CreateShader(const char *source, GLenum shader_type)
 			type = "VERTEX";
 		else	type = "FRAGMENT";
 
-		glGetShaderInfoLog(shader, 512, NULL, infoLog);
-		fprintf(stderr, "MYERROR: SHADER %s, COMPILATION FAILED:\n%s\n", type, infoLog); 
+		glGetShaderInfoLog(shader, 512, NULL, info_log);
+		fprintf(stderr, "MYERROR: SHADER %s, COMPILATION FAILED:\n%s\n", type, info_log); 
 	}
 
 	return shader; 
 }
 
-unsigned CreateShaderFromSource(const char *vertex_source, const char *fragment_source)
+unsigned CreateShaderFromSources(const char *vertex_source, const char *fragment_source)
 {
-	unsigned vertexShader   = CreateShader(vertex_source, GL_VERTEX_SHADER);
-	unsigned fragmentShader = CreateShader(fragment_source, GL_FRAGMENT_SHADER);
+	unsigned vertex_shader   = CreateShader(vertex_source, GL_VERTEX_SHADER);
+	unsigned fragment_shader = CreateShader(fragment_source, GL_FRAGMENT_SHADER);
 
-	unsigned shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
+	unsigned shader_program = glCreateProgram();
+	glAttachShader(shader_program, vertex_shader);
+	glAttachShader(shader_program, fragment_shader);
+	glLinkProgram(shader_program);
 
         int  success;
-	char infoLog[512];
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success); 
+	char info_log[512];
+	glGetProgramiv(shader_program, GL_LINK_STATUS, &success); 
 	if(!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		fprintf(stderr, "MYERROR: SHADER PROGRAM, LINKING ERROR:\n%s\n", infoLog);
+		glGetProgramInfoLog(shader_program, 512, NULL, info_log);
+		fprintf(stderr, "MYERROR: SHADER PROGRAM, LINKING ERROR:\n%s\n", info_log);
 	}
 
-	return shaderProgram;
+	return shader_program;
+}
+
+unsigned CreateShaderFromFiles(const char *vertex_file, const char *fragment_file)
+{
+	const char *vertex_source = load_file(vertex_file, 0);
+	const char *fragment_source = load_file(fragment_file, 0);
+
+	unsigned shader_program = CreateShaderFromSources(vertex_source, fragment_source);
+
+	free((void*)vertex_source);
+	free((void*)fragment_source);
+
+	return shader_program;
 
 }

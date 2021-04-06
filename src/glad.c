@@ -22,9 +22,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <glad/glad.h>
+#include <glad/glad.h>
 
-#include "glad.h"
 static void* get_proc(const char *namez);
 
 #if defined(_WIN32) || defined(__CYGWIN__)

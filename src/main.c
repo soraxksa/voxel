@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "glfw_code.h"
 #include "shadersUtil.h"
+#include "filesUtil.h"
 
 
 int main()
@@ -15,23 +16,6 @@ int main()
 		return -1;
 	}
 
-	const char *vertexShaderSource = 
-		"#version 330 core\n"
-		"layout(location = 0) in vec3 aPos;\n"
-		"void main()\n"
-		"{\n"
-		"   gl_Position = vec4(aPos.x-0.2f, aPos.y-0.2f, aPos.z, 1.0);\n"
-		"}\0";
-
-	const char *fragmentShaderSource =
-       		"#version 330 core\n"
-		"out vec4 Color;\n"
-		"void main()\n"
-		"{\n"
-		"    Color = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
-		"}\0";
-
-	printf("##########\n%s\n##########\n%s\n###########\n", vertexShaderSource, fragmentShaderSource);
 
 	float data[] = {
 	       -0.5f, -0.5f, 0.0f,
@@ -39,7 +23,7 @@ int main()
 		0.0f,  0.5f, 0.0f
 	};
 
-	unsigned shaderProgram = CreateShaderFromSource(vertexShaderSource, fragmentShaderSource);
+	unsigned shader_program = CreateShaderFromFiles("../src/shaders/vertex.vs", "../src/shaders/fragment.vs");
 
 	unsigned VAO;
 	glGenVertexArrays(1, &VAO);
@@ -59,7 +43,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glBindVertexArray(VAO);
-		glUseProgram(shaderProgram);
+		glUseProgram(shader_program);
 		//render
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
